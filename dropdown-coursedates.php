@@ -186,7 +186,7 @@ function dis_ddd_build_options($rules,$building = false) {
             if($dateset['range'][$year][$month][$day]) {
            
             $dtime = strtotime($year."-".$month."-".$day);
-            $dates[$dtime] = date("d/m/Y",$dtime);
+            $dates[$dtime] = date("d M, Y",$dtime);
             }
         }
 
