@@ -102,12 +102,12 @@ function dis_wc_ddd_insert_term()
 }
 add_action('init', 'dis_wc_ddd_insert_term');
 
-//dual credit goes to Webby Scotts for adding some simplicity to my original build
+//dual credit goes to Webby Scots for adding some simplicity to my original build
 // Webby Scots
 // http://webbyscots.com/
 
 
-//only call these action/filters if the category is set to dropdown
+//only call these action/filters if the category is set to dropdown and not in admin
 if(!is_admin()){
 add_action( 'wp', 'dis_ddd_check_product' );
 	}
@@ -123,6 +123,7 @@ function dis_ddd_check_product() {
 			if($category->slug == 'dis_ddd_bookings') {
 				add_filter('booking_form_fields','dis_ddd_booking_form_fields');
 				add_action('wp_footer','dis_ddd_css');
+				add_filter( 'body_class', 'dis_ddd_customclass' );
 			}
 		}
 	}
@@ -201,18 +202,21 @@ function dis_ddd_build_options($rules,$building = false) {
 
 // add class to page to instigate dropdown picker
 
-add_filter( 'body_class', 'dis_ddd_customclass' );
+
 function dis_ddd_customclass( $classes ) {
 	//check page category
-	$categories = get_the_terms( $post->ID, 'taxonomy' );
-	foreach( $categories as $category ) {
+	global $post;
+	
+	$dis_ddd_categories = get_the_terms($post->ID, 'product_cat' );
+	foreach( $dis_ddd_categories as $category ) {
 		if($category->slug == 'dis_ddd_bookings') {
         	$classes[] = 'dis-dropdown-class';
     	}
     }
     return $classes;
-}
+    wp_reset_postdata();
 
+}
 
 
 // add simple styles to hide picker
