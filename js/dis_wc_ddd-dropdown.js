@@ -14,7 +14,7 @@
     })
      $(".picker-chooser").insertBefore('.dis-dropdown-class .wc-bookings-date-picker-date-fields');
      //need to add unique ID to page with dropdown picker then use to filter here and above****
-      		$(".dis-dropdown-class #wc_bookings_field_start_date").prepend("<option value='' selected='selected'>Choose course</option>");
+      		$(".dis-dropdown-class #wc_bookings_field_start_date").prepend("<option value='' selected='selected'>Choose your date</option>");
                 $(".dis-dropdown-class select#wc_bookings_field_start_date").on('change', function() {
 	            
 				var selectedDate = $(this).val()
