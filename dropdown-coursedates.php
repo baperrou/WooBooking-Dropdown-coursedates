@@ -172,18 +172,18 @@ function dis_ddd_build_options($rules,$building = false) {
 	//echo '<pre>'; print_r($rules); echo '</pre>';
     global $wswp_dates_built;
     $dates = array();
-    foreach($rules as $dateset) {
+     foreach($rules as $dateset) {
 	    //be aware that this associative array changes depending on version of WooBookings
-        if ($dateset['type'] == "custom") {
-            $year = array_keys($dateset['range']);
+        if ($dateset[0] == "custom") {
+            $year = array_keys($dateset[1]);
             $year = reset($year);
-            $month = array_keys($dateset['range'][$year]);
+            $month = array_keys($dateset[1][$year]);
             $month = reset($month);
-            $day = array_keys($dateset['range'][$year][$month]);
-             $day = reset($day);
+            $day = array_keys($dateset[1][$year][$month]);
+            $day = reset($day);
            
             // it seams the day key is empty if bookable is set to NO so check here
-            if($dateset['range'][$year][$month][$day]) {
+            if($dateset[1][$year][$month][$day]) {
            
             $dtime = strtotime($year."-".$month."-".$day);
             $dates[$dtime] = date("d M, Y",$dtime);
