@@ -138,15 +138,21 @@ function dis_ddd_booking_form_fields($fields) {
     $selected_resource = 0;
     $reset_options = false;
     
+
     foreach($fields as $field) {
         $new_fields[$i] = $field;
-                if ($field['type'] == "select") {
+         
+            if ($field['type'] == "select") {
+	           
             $selected_resource = reset(array_keys($field['options']));
             if ($reset_options !== false)
                 $new_fields[$reset_options]['options'] = wswp_build_options($field['availability_rules'][$selected_resource]);
+                
+               
         }
         if ($field['type'] == "date-picker" && $wswp_dates_built === false)
         {
+				        
             $s = $i;
             $new_fields[$s]['class'] = array('picker-hidden');
             $i++;
@@ -155,14 +161,20 @@ function dis_ddd_booking_form_fields($fields) {
             if ($selected_resource == 0)
                 $reset_options = $i;
             $max = $field['max_date'];
-         
             $now = strtotime( 'midnight', current_time( 'timestamp' ) );
-            
             $max_date = strtotime( "+{$max['value']} {$max['unit']}", $now );
+            
             $new_fields[$i]['options'] = dis_ddd_build_options($field['availability_rules'][$selected_resource],$max_date);
+            
             $new_fields[$i]['class'] = array('picker-chooser');
-        }
+            
+       }
+       // must have an option if no dates are bookable
+       else {
+	       echo '<div class="alert alert-danger" id="no-dates">There are currently no bookable dates</div>';
+       }
         $i++;
+        
     }
     return $new_fields;
 }
@@ -171,41 +183,47 @@ function dis_ddd_build_options($rules,$building = false) {
 	 
 	//$booking=new WC_Product_Booking(get_the_ID());
 	//echo '<pre>'; print_r($rules); echo '</pre>';
+	$now = strtotime( 'midnight', current_time( 'timestamp' ) );
+
     global $wswp_dates_built;
     $dates = array();
     foreach($rules as $dateset) {
 	    //be aware that this associative array changes depending on version of WooBookings
-        if ($dateset[0] == "custom") {
-            $year = array_keys($dateset[1]);
+        if ($dateset['type'] == "custom") {
+            $year = array_keys($dateset['range']);
             $year = reset($year);
-            $month = array_keys($dateset[1][$year]);
+            $month = array_keys($dateset['range'][$year]);
             $month = reset($month);
-            $day = array_keys($dateset[1][$year][$month]);
+            $day = array_keys($dateset['range'][$year][$month]);
             $day = reset($day);
-           $now = strtotime( 'midnight', current_time( 'timestamp' ) );
-            // it seems the day key is empty if bookable is set to NO so check here
-            //also need to make sure that date is not in the past
-            if($dateset[1][$year][$month][$day]) {
+            
+            // it seams the day key is empty if bookable is set to NO so check here
+            if($dateset['range'][$year][$month][$day]) {
            
-	            $dtime = strtotime($year."-".$month."-".$day);
-	            if($dtime > $now) {
-	            $dates[$dtime] = date("d M, Y",$dtime);
-	            }
-            }
-        }
+            $dtime = strtotime($year."-".$month."-".$day);
+            // now make sure that it is later then today
+	           if($dtime > $now) {
+		            $dates[$dtime] = date("d M, Y",$dtime);
+		           
+		        }
+		        
+	        }
+       }
 
     }
+   
     ksort($dates);
     foreach($dates as $key => $date) {
         $dates[date("Y-m-d",$key)] = $date;
         unset($dates[$key]);
     }
-    $wswp_dates_built = true;
+	  
+	
+	 $wswp_dates_built = true;
     return $dates;
 }
 
 // add class to page to instigate dropdown picker
-
 
 function dis_ddd_customclass( $classes ) {
 	//check page category
